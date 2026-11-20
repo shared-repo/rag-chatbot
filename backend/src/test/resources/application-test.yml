@@ -1,0 +1,13 @@
+# REQ-18-4: 테스트는 MariaDB 없이 H2 인메모리 DB(MariaDB 호환 모드)로 실행한다.
+spring:
+  datasource:
+    # 테스트 컨텍스트마다 별도 DB (컨텍스트 캐시 간 스키마 충돌 방지)
+    url: jdbc:h2:mem:ragchatbot-${random.uuid};MODE=MariaDB;DATABASE_TO_LOWER=TRUE
+    username: sa
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+  flyway:
+    # V1__create_users.sql은 MariaDB 전용 문법(ENGINE, CHARSET)을 쓰므로 테스트에서는 JPA가 스키마를 만든다.
+    enabled: false

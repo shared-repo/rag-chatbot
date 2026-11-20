@@ -1,0 +1,55 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '4.0.9'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'kr.seoulplan'
+version = '0.0.1-SNAPSHOT'
+description = '2040 Seoul Plan chatbot web API'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	// REQ-17: 세션 기반 인증
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	// REQ-18: MariaDB + JPA + Flyway
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-flyway'
+	runtimeOnly 'org.flywaydb:flyway-mysql'
+	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+	testImplementation 'org.springframework.boot:spring-boot-starter-validation-test'
+	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+	testImplementation 'org.springframework.boot:spring-boot-starter-security-test'
+	// REQ-18-4: 테스트는 MariaDB 없이 H2로 실행
+	testRuntimeOnly 'com.h2database:h2'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+// REQ-15-3: 소스·리소스·실행 환경 모두 UTF-8
+// (Java 21은 file.encoding 기본값이 UTF-8이지만, Windows 콘솔 출력(stdout/stderr)은 MS949를 따르므로 명시한다)
+def utf8JvmArgs = ['-Dfile.encoding=UTF-8', '-Dstdout.encoding=UTF-8', '-Dstderr.encoding=UTF-8']
+
+tasks.withType(JavaCompile).configureEach {
+	options.encoding = 'UTF-8'
+}
+
+tasks.withType(JavaExec).configureEach {
+	jvmArgs utf8JvmArgs
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+	jvmArgs utf8JvmArgs
+}

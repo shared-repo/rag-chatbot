@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: backend
+  config:
+    # REQ-18-2: 프로젝트 루트의 .env에서 DB_URL / DB_USERNAME / DB_PASSWORD를 읽는다 (backend/ 에서 실행).
+    # 같은 이름의 OS 환경 변수가 있으면 그 값이 우선한다.
+    import: optional:file:../.env[.properties]
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    open-in-view: false
+    hibernate:
+      # REQ-18-3: 스키마는 Flyway(db/migration)가 만들고 JPA는 검증만 한다.
+      ddl-auto: validate
+
+server:
+  port: 8080
+  servlet:
+    session:
+      timeout: 30m
+      cookie:
+        # REQ-17-4
+        http-only: true
+        same-site: lax
+
+# 챗봇 API(FastAPI) 연결 설정 (F3-9, F3-14)
+chatbot:
+  api:
+    base-url: http://localhost:8000
+    connect-timeout: 5s
+    read-timeout: 60s
